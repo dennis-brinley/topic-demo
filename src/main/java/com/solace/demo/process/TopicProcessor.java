@@ -20,6 +20,9 @@ public class TopicProcessor {
     @Getter
     private List<TopicNode> rootTopicNodes = new ArrayList<TopicNode>();
 
+    @Getter
+    private List<String> errorTopics = new ArrayList<String>();
+
     private MatchConfig matchConfig = null;
 
     private RegexMatcher regexMatcher = null;
@@ -38,14 +41,19 @@ public class TopicProcessor {
         }
         
         for (String processTopic : topicList.getTopics() ) {
-            StringTokenizer tokenizer = new StringTokenizer(processTopic, matchConfig.getTopicDelimiter());
-            if (tokenizer.hasMoreTokens()) {
-                execMatch(tokenizer, rootTopicNodes, "" );
+            try {
+                StringTokenizer tokenizer = new StringTokenizer(processTopic, matchConfig.getTopicDelimiter());
+                if (tokenizer.hasMoreTokens()) {
+                    execMatch(tokenizer, rootTopicNodes, "" );
+                }
+            } catch ( Exception exc ) {
+                log.warn("Error processing topic string: {}", processTopic);
+                errorTopics.add( processTopic );
             }
         }
     }
 
-    private void execMatch(StringTokenizer tokenizer, List<TopicNode> topicNodes, String topicDomain) {
+    private void execMatch(StringTokenizer tokenizer, List<TopicNode> topicNodes, String topicDomain) throws Exception {
 
         // SAFETY CHECK
         if (!tokenizer.hasMoreTokens()) return;
@@ -96,6 +104,15 @@ public class TopicProcessor {
             topicNodes.add( newLiteralNode );
         }
         return;
+    }
+
+    public long getUniqueTopicCount() {
+
+        long uniqueCount = 0;
+        for ( TopicNode topicNode : this.rootTopicNodes ) {
+            uniqueCount += topicNode.getUniqueTopicCount();
+        }
+        return uniqueCount;
     }
 
     private String escapeSpecialForRegex(String s) {

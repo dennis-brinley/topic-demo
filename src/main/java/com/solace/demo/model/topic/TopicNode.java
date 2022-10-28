@@ -97,6 +97,15 @@ public class TopicNode {
         displayTopicTreeElements( this, rootTopic, delim );
     }
 
+    public long getUniqueTopicCount() {
+        long uniqueCount = 0;
+        if ( this.termCount > 0 ) uniqueCount++;
+        for ( TopicNode topicNode : this.topicNodes ) {
+            uniqueCount += topicNode.getUniqueTopicCount();
+        }
+        return uniqueCount;
+    }
+
     private void displayTopicTreeElements( TopicNode node, String rootTopic, String delim ) {
         String topicString = rootTopic + ( node.isVariableNode() ? String.format("{%s}", node.getName() ) : node.getName() );
         if ( node.getTermCount() > 0 ) {

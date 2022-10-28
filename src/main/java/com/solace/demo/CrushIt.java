@@ -174,7 +174,7 @@ public class CrushIt
         try { 
             topicProcessor.processTopics( topicList );
         } catch ( Exception exc ) {
-            log.error(exc.getMessage());
+            log.error( "Error processing topics: {}", exc.getMessage());
             return;
         }
         final long endTime = System.currentTimeMillis();
@@ -184,7 +184,11 @@ public class CrushIt
             rootNode.displayTopicTree( matchConfig.getTopicDelimiter() );
         }
 
-        log.info( "Total Topics Processed: {}", topicList.getTopics().size() );
+        if ( topicProcessor.getErrorTopics().size() > 0 ) {
+            log.warn( "Some topics could not be processed; Errors={}", topicProcessor.getErrorTopics().size() );
+        }
+        log.info( "Total Topics Processed:    {}", topicList.getTopics().size() );
+        log.info( "Total Unique Topics Found: {}", topicProcessor.getUniqueTopicCount());
         log.info( "Elapsed Time: {} milliseconds", ( endTime - beginTime) );
 
         return;

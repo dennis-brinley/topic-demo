@@ -1,6 +1,8 @@
 ---
 topicDelimiter: /
 expressions:
+  ##
+  ## GLOBAL EXPRESSIONS
   - name: BOOLEAN
     regexPattern: ^(true|false)$
     priority: 100
@@ -31,7 +33,8 @@ expressions:
   - name: POS_CODE
     regexPattern: ^K[A-Z]\d{8}$
     priority: 25
-  ### SMES DOMAIN
+  ##
+  ## SMES DOMAIN
   - name: SMES_ENUM_CODE
     regexPattern: ^(ML|AD|AY)$
     priority: 20
@@ -40,47 +43,56 @@ expressions:
     regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
     priority: 20
     topicDomain: SMES
-  ### TAIS DOMAIN
+  ##
+  ## TAIS DOMAIN
   - name: TAIS_POS_ID
     regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
     priority: 20
     topicDomain: TAIS
-  ### TBFM DOMAIN
+  ##
+  ## TBFM DOMAIN
   - name: TBFM_STATUS_CODE
     regexPattern: ^(flt|eta|sta|mrp|sch)$
     priority: 22
     topicDomain: TBFM
-  ### ITWS DOMAIN
+  ##
+  ## ITWS DOMAIN
   - name: ITWS_POS_ID
     regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
     priority: 25
     topicDomain: ITWS
-  ### ITWS_Alert DOMAIN
+  ##
+  ## ITWS_Alert DOMAIN
   - name: ITWS_Alert_POS_ID
     regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
     priority: 20
     topicDomain: ITWS_Alert
-  ### TDES DOMAIN
+  ##
+  ## TDES DOMAIN
   - name: TDES_POS_ID
     regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
     priority: 20
     topicDomain: TDES
-  ### STDDS DOMAIN
+  ##
+  ## STDDS DOMAIN
   - name: STDDS_POS_CODE
     regexPattern: ^[A-JL-Z]{1}[A-Z]{1}[A-Z0-9]{1,6}$
     priority: 23
     topicDomain: STDDS
-  ### ISMC DOMAIN
+  ##
+  ## ISMC DOMAIN
   - name: ISMC_POS_ID
     regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
     priority: 20
     topicDomain: ISMC
-  ### APDS DOMAIN
+  ##
+  ## APDS DOMAIN
   - name: APDS_POS_ID
     regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
     priority: 20
     topicDomain: APDS
-  ### FDPS DOMAIN
+  ##
+  ## FDPS DOMAIN
   - name: FDPS_FLT_OPER
     regexPattern: ^(FDPS_FlightOperator|[A-Z]{3})$
     priority: 15

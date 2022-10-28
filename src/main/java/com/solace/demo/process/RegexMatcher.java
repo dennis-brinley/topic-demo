@@ -39,6 +39,7 @@ public class RegexMatcher {
                             rpe.getRegexPattern(), 
                             rpe.getPriority(),
                             ( rpe.getTopicDomain() == null ? "" : rpe.getTopicDomain() )));
+                            
                     log.info("Configured REGEX [{}] for topicDomain [{}]; priority = {}", 
                             rpe.getName(), 
                             (rpe.getTopicDomain() == null ? "MATCH ANY" : rpe.getTopicDomain()), 
