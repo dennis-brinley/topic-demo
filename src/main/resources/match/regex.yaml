@@ -1,0 +1,112 @@
+---
+topicDelimiter: /
+expressions:
+  - name: BOOLEAN
+    regexPattern: ^(true|false)$
+    priority: 100
+  - name: REALNUM
+    regexPattern: ^[\+\-]?\d+\.\d+$
+    priority: 100
+  - name: LATLON
+    regexPattern: ^[\+\-]?\d{1,3}\.\d{6}$
+    priority: 50
+  - name: INTEGER
+    regexPattern: ^[\+\-]?\d+$
+    priority: 95
+  - name: FLTNUM
+    regexPattern: ^[A-Z]{3}\d{1,4}$
+    priority: 30
+  - name: US_AERODROME
+    regexPattern: ^(K|P|T)[A-Z]{3}$
+    priority: 25
+  - name: US_ERAM
+    regexPattern: ^Z[A-Z]{2}$
+    priority: 15
+  - name: FIXM_MSG_TYPE
+    regexPattern: ^[A-Z]{2}_FIXM$
+    priority: 10
+  - name: US_AIRCRAFT_TAIL
+    regexPattern: ^(N\d{5}|N\d{4}[A-Z]{1}|N\d{3}[A-Z]{2}|N\d{2}[A-Z]{2}|N\d{3}[A-Z]{1})$
+    priority: 25
+  - name: POS_CODE
+    regexPattern: ^K[A-Z]\d{8}$
+    priority: 25
+  ### SMES DOMAIN
+  - name: SMES_ENUM_CODE
+    regexPattern: ^(ML|AD|AY)$
+    priority: 20
+    topicDomain: SMES
+  - name: SMES_POS_ID
+    regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
+    priority: 20
+    topicDomain: SMES
+  ### TAIS DOMAIN
+  - name: TAIS_POS_ID
+    regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
+    priority: 20
+    topicDomain: TAIS
+  ### TBFM DOMAIN
+  - name: TBFM_STATUS_CODE
+    regexPattern: ^(flt|eta|sta|mrp|sch)$
+    priority: 22
+    topicDomain: TBFM
+  ### ITWS DOMAIN
+  - name: ITWS_POS_ID
+    regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
+    priority: 25
+    topicDomain: ITWS
+  ### ITWS_Alert DOMAIN
+  - name: ITWS_Alert_POS_ID
+    regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
+    priority: 20
+    topicDomain: ITWS_Alert
+  ### TDES DOMAIN
+  - name: TDES_POS_ID
+    regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
+    priority: 20
+    topicDomain: TDES
+  ### STDDS DOMAIN
+  - name: STDDS_POS_CODE
+    regexPattern: ^[A-JL-Z]{1}[A-Z]{1}[A-Z0-9]{1,6}$
+    priority: 23
+    topicDomain: STDDS
+  ### ISMC DOMAIN
+  - name: ISMC_POS_ID
+    regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
+    priority: 20
+    topicDomain: ISMC
+  ### APDS DOMAIN
+  - name: APDS_POS_ID
+    regexPattern: ^[A-Z]{1}[A-Z\d]{2}$
+    priority: 20
+    topicDomain: APDS
+  ### FDPS DOMAIN
+  - name: FDPS_FLT_OPER
+    regexPattern: ^(FDPS_FlightOperator|[A-Z]{3})$
+    priority: 15
+    topicDomain: FDPS
+  - name: FDPS_LOC_ID
+    regexPattern: ^[A-Z]{1}[A-Z0-9]{3}$
+    priority: 50
+    topicDomain: FDPS
+  - name: FDPS_COORDS
+    regexPattern: ^\d{4}(N|S)\d{5}(E|W)$
+    priority: 45
+    topicDomain: FDPS
+  - name: FDPS_STATUS_CODE
+    regexPattern: ^(ACTIVE|DROPPED|CANCELLED|PROPOSED)$
+    priority: 20
+    topicDomain: FDPS
+  - name: FDPS_NONSTD_AIRCRAFT_ID
+    regexPattern: ^([A-Z]{5}|N[0-9]{4}|[A-Z]{2,3}\d{2,3}[A-Z]{0,2})$
+    priority: 100
+    topicDomain: FDPS
+  - name: FDPS_POS_ID
+    regexPattern: ^[A-Z]{3}\d{6}$
+    priority: 100
+    topicDomain: FDPS
+#
+# knownTopics is not being used
+knownTopics:
+  - some/topic/value/{NAME:EXPRESSION_NAME}/{NAME:EXPRESSION_NAME}/text/{NAME:EXPRESSION_NAME}
+  - some/topic/value/{NAME:EXPRESSION_NAME}/{NAME:EXPRESSION_NAME}/text/{NAME:EXPRESSION_NAME}
