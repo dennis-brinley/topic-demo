@@ -6,7 +6,7 @@ Use yaml configuration file to define topic delimiter, Regex Expressions, and pr
 
 **Note:** *Pre-defined topic structures are not currently enabled.
 
-Example Configuration YAML file: [regex.yaml](../src/main/resources/match/regex.yaml)
+Example Configuration YAML file: [regex.yaml](src/main/resources/match/regex.yaml)
 
 ```yaml
 ---
