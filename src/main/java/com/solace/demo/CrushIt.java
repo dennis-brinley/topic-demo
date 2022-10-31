@@ -41,7 +41,7 @@ public class CrushIt
     static final String     ARG_BASIC_PWD       = "--basic-password=";
 
     static final String     ARG_WAIT_MILLIS     = "--wait-millis=";
-    static final String		ARG_SUBSCRIPTION   	= "--output-file=";
+    static final String		ARG_SUBSCRIPTION   	= "--subscription=";
 
     public static void main( String[] args ) throws IOException
     {
