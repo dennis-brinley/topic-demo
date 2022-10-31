@@ -28,6 +28,11 @@ public class RegexMatcherEntry {
     @Getter
     protected Integer priority;
 
+    /**
+     * The first literal element of a discovered topic. This element is used as
+     * a selector to identify domain-specific Regex expressions that will apply
+     * to the topic.
+     */
     @Getter
     protected String topicDomain;
 

@@ -4,7 +4,7 @@ expressions:
   ##
   ## GLOBAL EXPRESSIONS
   - name: BOOLEAN
-    regexPattern: ^(true|false)$
+    regexPattern: ^([Tt]rue|[Ff]alse|TRUE|FALSE)$
     priority: 100
   - name: REALNUM
     regexPattern: ^[\+\-]?\d+\.\d+$

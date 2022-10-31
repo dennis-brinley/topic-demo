@@ -15,6 +15,11 @@ public class RegexMatcher {
     @Getter
     private List<RegexMatcherEntry> entries = new ArrayList<RegexMatcherEntry>();
 
+    /**
+     * Initialize the RegexMatcher
+     * @param matchConfig - Object defining configuration settings for the matcher
+     * This parameter is created by reading a yaml configuration file
+     */
     public RegexMatcher(MatchConfig matchConfig) {
         Integer     min = matchConfig.getExpressions().get(0).getPriority(), 
                     max = matchConfig.getExpressions().get(0).getPriority();
@@ -52,11 +57,11 @@ public class RegexMatcher {
     }
 
     /***
-     * 
+     * Checks a given string for matches against identified regular expressions
      * @param s - The string to match against RegEx expressions configured for the matcher
      * @param topicDomain - The topic domain that this topic belongs to. 
-     * Will not match regex belonging to a different domain. RegexMatcherEntries not identified
-     * with a domain will be used for matching.
+     * Selector for domain-specific regex expressions. RegexMatcherEntries not identified
+     * with a domain will also be used for matching.
      * @return - RegexMatcherEntry object if a match was found, NULL if a match was not found
      */
     public RegexMatcherEntry checkForMatch( String s, String topicDomain ) {

@@ -3,6 +3,7 @@ package com.solace.demo;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -33,6 +34,7 @@ public class CrushIt
 {
     static final String		ARG_TOPICS_FILE_IN  = "--topics-file-in=";
 
+    static final String     ARG_CONFIG_FILE     = "--regex-config=";
     static final String     ARG_SOLACE_HOST     = "--solace-broker=";
     static final String     ARG_SOLACE_VPN      = "--vpn=";
     static final String     ARG_BASIC_USER      = "--basic-user=";
@@ -68,6 +70,10 @@ public class CrushIt
                     solaceMsgHost = arg.replace(ARG_SOLACE_HOST, "");
                     continue;
                 }
+                if (arg.startsWith(ARG_CONFIG_FILE) && arg.length() > ARG_CONFIG_FILE.length() ) {
+                    matchConfigYamlFile = arg.replace(ARG_CONFIG_FILE, "" );
+                    continue;
+                }
                 if (arg.startsWith(ARG_SOLACE_VPN) && arg.length() > ARG_SOLACE_VPN.length()) {
                     solaceVpn = arg.replace(ARG_SOLACE_VPN, "");
                     continue;
@@ -94,7 +100,7 @@ public class CrushIt
             System.exit(-1);
         }
 
-        // READ MATCHER CONFIG FILE
+        // READ REGEX / MATCH CONFIG FILE
         try {
         	matchConfig = mapper.readValue(new File(matchConfigYamlFile), MatchConfig.class);
         } catch (DatabindException dbexc) {
@@ -110,6 +116,7 @@ public class CrushIt
             log.error("Parsing error: {}\n{}", ioexc.getMessage(), ioexc.getStackTrace());
         	System.exit(-12);
 		}
+        log.info("Listener will run for {} seconds", ( waitMillis / 1000 ) );
 		log.info("PARSING CONFIG FILE COMPLETE: {}", matchConfigYamlFile);
         log.info("First Entry Name: {} --- Pattern: {}", 
                     matchConfig.getExpressions().get(0).getName(), 
@@ -130,8 +137,8 @@ public class CrushIt
         log.info("First topic: {}", topicList.getTopics().get(0));
 */
 
-        //  CACHE FOR TOPICS LIST; CURRENTLY NOT THREAD SAFE!!!
-        TopicList topicList = new TopicList();
+        TopicProcessor topicProcessor = new TopicProcessor(matchConfig);
+        ConcurrentLinkedQueue<String> topicQueue = new ConcurrentLinkedQueue<String>();
 
 
         final Properties properties = new Properties();
@@ -146,20 +153,26 @@ public class CrushIt
         final DirectMessageReceiver receiver = messagingService.createDirectMessageReceiverBuilder()
                 .withSubscriptions(TopicSubscription.of( subscription )).build().start();
         
-        //  START SUBSCRIBING AND CACHING MSGS
+        //  START SUBSCRIBING AND CACHING MSG TOPICS
         final MessageHandler messageHandler = (inboundMessage) -> {
-           // log.debug( "TOPIC: {}", inboundMessage.getDestinationName() );
-            topicList.getTopics().add(inboundMessage.getDestinationName());
+            topicQueue.add( inboundMessage.getDestinationName() );
         };
         receiver.receiveAsync(messageHandler);
 
-        // WAIT FOR PRESCRIBED TIME
+        long startTime = System.currentTimeMillis();
         try {
-            Thread.sleep( waitMillis );
+            while( ( System.currentTimeMillis() - startTime ) < waitMillis ) {
+                while( topicQueue.peek() != null ) {
+                    topicProcessor.processTopic( topicQueue.remove() );
+                }
+                Thread.sleep( 500 );
+            }
         } catch ( RuntimeException rtexc ) {
-            log.error("Run time exception???");
+            log.error("Run time exception: {}", rtexc.getMessage());
         } catch ( InterruptedException iexc ) {
-            log.error("Thread sleep interrupted - probably shutting down");
+            log.error("Thread sleep interrupted - probably shutting down: {}", iexc.getMessage());
+        } catch ( Exception exc ) {
+            log.error( "Caught general exception processing topics: {}", exc.getMessage() );
         }
 
         //  DISCONNECT FROM THE BROKER
@@ -167,17 +180,14 @@ public class CrushIt
         messagingService.disconnect();
         log.info("Disconnecting from Solace Broker");
 
-
-        final long beginTime = System.currentTimeMillis();
-
-        TopicProcessor topicProcessor = new TopicProcessor(matchConfig);
-        try { 
-            topicProcessor.processTopics( topicList );
+        // HANDLE STRAGGLERS
+        try {
+            while( topicQueue.peek() != null ) {
+                topicProcessor.processTopic( topicQueue.remove() );
+            }
         } catch ( Exception exc ) {
-            log.error( "Error processing topics: {}", exc.getMessage());
-            return;
+            log.error("Caught general exception processing topics: {}", exc.getMessage() );
         }
-        final long endTime = System.currentTimeMillis();
 
         //  DISPLAY RESULTS
         for ( TopicNode rootNode : topicProcessor.getRootTopicNodes() ) {
@@ -187,10 +197,11 @@ public class CrushIt
         if ( topicProcessor.getErrorTopics().size() > 0 ) {
             log.warn( "Some topics could not be processed; Errors={}", topicProcessor.getErrorTopics().size() );
         }
-        log.info( "Total Topics Processed:    {}", topicList.getTopics().size() );
+        log.info( "Total Topics Processed:    {}", topicProcessor.getProcessedTopicCount() );
         log.info( "Total Unique Topics Found: {}", topicProcessor.getUniqueTopicCount());
-        log.info( "Elapsed Time: {} milliseconds", ( endTime - beginTime) );
-
+        log.info( "Total Regex processing time: {} milliseconds", ( topicProcessor.getCumulativeElapsedProcessingTimeNano() / 1e6 ) );
+        log.info( "Effective Regex Processing Rate: {} topics/second", 
+                    (int)( topicProcessor.getProcessedTopicCount() / ( topicProcessor.getCumulativeElapsedProcessingTimeNano() / 1e9  )));
         return;
     }
 }

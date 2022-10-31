@@ -20,13 +20,34 @@ public class TopicProcessor {
     @Getter
     private List<TopicNode> rootTopicNodes = new ArrayList<TopicNode>();
 
+    /**
+     * Topics that that caused an exception to be thrown and could not
+     * be fully evaluated
+     */
     @Getter
     private List<String> errorTopics = new ArrayList<String>();
 
     private MatchConfig matchConfig = null;
 
     private RegexMatcher regexMatcher = null;
+
+    /**
+     * Total number of topics processed, including failures
+     */
+    @Getter
+    private long processedTopicCount = 0;
+
+    /**
+     * Cumulative time performing match operations for a TopicProcessor object instance.
+     * In nanoseconds
+     */
+    @Getter
+    private long cumulativeElapsedProcessingTimeNano = 0;
     
+    /**
+     * Constructor
+     * @param matchConfig
+     */
     public TopicProcessor(MatchConfig matchConfig) {
         this.matchConfig = matchConfig;
         regexMatcher = new RegexMatcher(matchConfig);
@@ -40,17 +61,25 @@ public class TopicProcessor {
                                 "to be set (Non-null) prior to calling processTopics()");
         }
         
-        for (String processTopic : topicList.getTopics() ) {
-            try {
-                StringTokenizer tokenizer = new StringTokenizer(processTopic, matchConfig.getTopicDelimiter());
-                if (tokenizer.hasMoreTokens()) {
-                    execMatch(tokenizer, rootTopicNodes, "" );
-                }
-            } catch ( Exception exc ) {
-                log.warn("Error processing topic string: {}", processTopic);
-                errorTopics.add( processTopic );
-            }
+        for (String topic : topicList.getTopics() ) {
+            processTopic( topic );
         }
+    }
+
+    public void processTopic(String topic) throws Exception {
+
+        long startNano = System.nanoTime();
+        try {
+            StringTokenizer tokenizer = new StringTokenizer(topic, matchConfig.getTopicDelimiter());
+            if (tokenizer.hasMoreTokens()) {
+                execMatch(tokenizer, rootTopicNodes, "" );
+            }
+        } catch ( Exception exc ) {
+            log.warn("Error processing topic string: {}", topic);
+            errorTopics.add( topic );
+        }
+        processedTopicCount++;
+        cumulativeElapsedProcessingTimeNano += System.nanoTime() - startNano;
     }
 
     private void execMatch(StringTokenizer tokenizer, List<TopicNode> topicNodes, String topicDomain) throws Exception {

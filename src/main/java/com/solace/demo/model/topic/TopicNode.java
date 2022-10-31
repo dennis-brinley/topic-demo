@@ -109,7 +109,7 @@ public class TopicNode {
     private void displayTopicTreeElements( TopicNode node, String rootTopic, String delim ) {
         String topicString = rootTopic + ( node.isVariableNode() ? String.format("{%s}", node.getName() ) : node.getName() );
         if ( node.getTermCount() > 0 ) {
-            System.out.println(String.format("%06d -- %s", node.getTermCount(), topicString) );
+            System.out.println(String.format("%07d -- %s", node.getTermCount(), topicString) );
         }
         for (TopicNode subNode : node.getTopicNodes() ) {
             displayTopicTreeElements( subNode, topicString + delim, delim );

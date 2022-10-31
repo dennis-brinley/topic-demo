@@ -9,6 +9,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+/**
+ * Defines yaml configuration file including topic delimiter, Regex Expressions,
+ * and pre-defined topic strings
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,19 +20,20 @@ import lombok.NonNull;
 public class MatchConfig {
     
     /**
-     * 
+     * The default topic delimiter. Defaults to "/"
      */
     @NonNull
-    protected String topicDelimiter;
+    @Builder.Default
+    protected String topicDelimiter = "/";
 
     /**
-     * 
+     * Regular expression entries
      */
     @Builder.Default
     protected List<RegexPatternEntry> expressions = new ArrayList<RegexPatternEntry>();
 
     /**
-     * 
+     * Not used. Reserved for future use
      */
     @Builder.Default
     protected List<String> knownTopics = new ArrayList<String>();
