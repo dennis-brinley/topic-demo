@@ -47,5 +47,5 @@ The following arguments are available on the command line:
     - ```--wait-millis=5000``` --> listen for 5 seconds before disconnecting
     - Default = 5000 milliseconds
 - --subscription=[ topic subscription string ]
-    - ```--subscription=ACME/orders/>
+    - ```--subscription=ACME/orders/>```
     - Default = > (All topics)
