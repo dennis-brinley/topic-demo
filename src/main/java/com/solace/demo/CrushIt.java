@@ -39,7 +39,6 @@ public class CrushIt
     static final String     ARG_SOLACE_VPN      = "--vpn=";
     static final String     ARG_BASIC_USER      = "--basic-user=";
     static final String     ARG_BASIC_PWD       = "--basic-password=";
-
     static final String     ARG_WAIT_MILLIS     = "--wait-millis=";
     static final String		ARG_SUBSCRIPTION   	= "--subscription=";
 
@@ -68,22 +67,27 @@ public class CrushIt
                 // }
                 if (arg.startsWith(ARG_SOLACE_HOST) && arg.length() > ARG_SOLACE_HOST.length()) {
                     solaceMsgHost = arg.replace(ARG_SOLACE_HOST, "");
+                    log.debug("solaceMsgHost={}", solaceMsgHost);
                     continue;
                 }
                 if (arg.startsWith(ARG_CONFIG_FILE) && arg.length() > ARG_CONFIG_FILE.length() ) {
                     matchConfigYamlFile = arg.replace(ARG_CONFIG_FILE, "" );
+                    log.debug("matchConfigYamlFile={}", matchConfigYamlFile);
                     continue;
                 }
                 if (arg.startsWith(ARG_SOLACE_VPN) && arg.length() > ARG_SOLACE_VPN.length()) {
                     solaceVpn = arg.replace(ARG_SOLACE_VPN, "");
+                    log.debug("solaceVpn={}", solaceVpn);
                     continue;
                 }
                 if (arg.startsWith(ARG_BASIC_USER) && arg.length() > ARG_BASIC_USER.length()) {
                     solaceBasicUser = arg.replace(ARG_BASIC_USER, "");
+                    log.debug("solaceBasicUser={}", solaceBasicUser);
                     continue;
                 }
                 if (arg.startsWith(ARG_BASIC_PWD) && arg.length() > ARG_BASIC_PWD.length()) {
                     solaceBasicPassword = arg.replace(ARG_BASIC_PWD, "");
+                    log.debug("solaceBasicPassword={}", "********");
                     continue;
                 }
                 if (arg.startsWith(ARG_SUBSCRIPTION) && arg.length() > ARG_SUBSCRIPTION.length()) {
@@ -159,9 +163,10 @@ public class CrushIt
         };
         receiver.receiveAsync(messageHandler);
 
-        long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
         try {
             while( ( System.currentTimeMillis() - startTime ) < waitMillis ) {
+                //  TO-DO: LOOP WILL NOT QUIT IF PROCESSOR CANNOT KEEP UP
                 while( topicQueue.peek() != null ) {
                     topicProcessor.processTopic( topicQueue.remove() );
                 }
@@ -195,13 +200,48 @@ public class CrushIt
         }
 
         if ( topicProcessor.getErrorTopics().size() > 0 ) {
-            log.warn( "Some topics could not be processed; Errors={}", topicProcessor.getErrorTopics().size() );
+            log.warn( "Some topics could not be processed; Errors count={}", topicProcessor.getErrorTopics().size() );
         }
         log.info( "Total Topics Processed:    {}", topicProcessor.getProcessedTopicCount() );
         log.info( "Total Unique Topics Found: {}", topicProcessor.getUniqueTopicCount());
         log.info( "Total Regex processing time: {} milliseconds", ( topicProcessor.getCumulativeElapsedProcessingTimeNano() / 1e6 ) );
         log.info( "Effective Regex Processing Rate: {} topics/second", 
                     (int)( topicProcessor.getProcessedTopicCount() / ( topicProcessor.getCumulativeElapsedProcessingTimeNano() / 1e9  )));
+
+/***
+ * Test code to make sure all topics are output to array
+ * 
+        for ( TopicNode node : topicProcessor.getRootTopicNodes() ) {
+            for ( String s : node.getTopicList(matchConfig.getTopicDelimiter())) {
+                System.out.println( String.format("%04d - Topic: %s", s.length(), s ));
+            }
+        }
+*/
+
+/***
+ * Test AsyncApi Extract
+ * 
+        AsyncAPI asyncApi = new AsyncAPI();
+        asyncApi.setAsyncapi("2.4.0");
+        asyncApi.setInfo(new Info());
+        asyncApi.getInfo().setTitle("FAA-topic-import-test");
+        asyncApi.getInfo().setDescription("Scrape topics from SCDS feed and import to Event Portal");
+        asyncApi.getInfo().setVersion("0.0.1");
+        asyncApi.getInfo().setExtensionFields(new HashMap<String, String>());
+        asyncApi.getInfo().getExtensionFields().put("x-event-api-state-id", "1");
+        asyncApi.getInfo().getExtensionFields().put("x-event-api-state-name", "DRAFT");
+        asyncApi.getInfo().getExtensionFields().put("x-application-domain-name", "FAA");
+        asyncApi.setChannels(new HashMap<String, ChannelItem>());
+
+        for ( TopicNode node : topicProcessor.getRootTopicNodes() ) {
+            for ( String topic : node.getTopicList(matchConfig.getTopicDelimiter())) {
+//                ChannelItem ci = new ChannelItem();
+                asyncApi.getChannels().put( topic, new ChannelItem() );
+            }
+        }
+        mapper.setSerializationInclusion(Include.NON_NULL);
+        mapper.writeValue( new File( "asysncapi-faa.yaml"), asyncApi);
+*/
         return;
     }
 }

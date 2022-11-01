@@ -145,7 +145,7 @@ public class TopicProcessor {
     }
 
     private String escapeSpecialForRegex(String s) {
-        String escChars[] = { 
+        final String escChars[] = { 
                 "\\\\", "\\.", "\\*", "\\>", "\\+", "\\-", "\\(", "\\)", "\\^", "\\$", "\\#", "\\@", "\\!", "\\&", 
                 "\\=", "\\,", "\\{", "\\}", "\\[", "\\]", "\\|", "\\\"", "\\:", "\\;", "\\~", "\\`", "\\%", "\\?", "\\<" 
             };

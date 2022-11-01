@@ -114,9 +114,13 @@ expressions:
     priority: 100
     topicDomain: FDPS
   - name: FDPS_POS_ID
-    regexPattern: ^[A-Z]{3}\d{6}$
+    regexPattern: ^([A-Z]{3}|[A-Z]{5})\d{6}$
     priority: 100
     topicDomain: FDPS
+#  - name: FDPS_INTEGER_OR_NAN
+#    regexPattern: ^([\+\-]?\d+|NaN)$
+#    priority: 110
+#    topicDomain: FDPS
 #
 # knownTopics is not being used
 knownTopics:

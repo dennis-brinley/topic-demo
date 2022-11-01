@@ -45,7 +45,7 @@ public class RegexMatcher {
                             rpe.getPriority(),
                             ( rpe.getTopicDomain() == null ? "" : rpe.getTopicDomain() )));
                             
-                    log.info("Configured REGEX [{}] for topicDomain [{}]; priority = {}", 
+                    log.debug("Configured REGEX [{}] for topicDomain [{}]; priority = {}", 
                             rpe.getName(), 
                             (rpe.getTopicDomain() == null ? "MATCH ANY" : rpe.getTopicDomain()), 
                             rpe.getPriority() );

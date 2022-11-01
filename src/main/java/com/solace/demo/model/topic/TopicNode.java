@@ -50,7 +50,7 @@ public class TopicNode {
      * Number of matches reported on this node
      */
     @Getter
-    private long matchCount = 0;
+    private long matchCount = 0L;
 
     /***
      * Count of the number of topics where this was the last node in the topic
@@ -58,7 +58,7 @@ public class TopicNode {
      * full topic string
      */
     @Getter
-    private long termCount = 0;
+    private long termCount = 0L;
 
     private Pattern p;
 
@@ -92,27 +92,50 @@ public class TopicNode {
         return m.matches();
     }
 
-    public void displayTopicTree( String delim ) {
-        String rootTopic = "";
-        displayTopicTreeElements( this, rootTopic, delim );
-    }
-
     public long getUniqueTopicCount() {
-        long uniqueCount = 0;
-        if ( this.termCount > 0 ) uniqueCount++;
+        long uniqueCount = 0L;
+        if ( this.termCount > 0L ) uniqueCount++;
         for ( TopicNode topicNode : this.topicNodes ) {
             uniqueCount += topicNode.getUniqueTopicCount();
         }
         return uniqueCount;
     }
 
+    public void displayTopicTree( String delim ) {
+        String rootTopic = "";
+        displayTopicTreeElements( this, rootTopic, delim );
+    }
+
     private void displayTopicTreeElements( TopicNode node, String rootTopic, String delim ) {
         String topicString = rootTopic + ( node.isVariableNode() ? String.format("{%s}", node.getName() ) : node.getName() );
-        if ( node.getTermCount() > 0 ) {
+        if ( node.getTermCount() > 0L ) {
             System.out.println(String.format("%07d -- %s", node.getTermCount(), topicString) );
         }
         for (TopicNode subNode : node.getTopicNodes() ) {
             displayTopicTreeElements( subNode, topicString + delim, delim );
         }
+    }
+
+    public List<String> getTopicList( String delim ) {
+        String rootTopic = "";
+        List< String > topicList = new ArrayList<String>();
+        for ( String topic : this.getTopicListTreeElements( this, rootTopic, delim ) ) {
+            topicList.add(topic);
+        }
+        return topicList;
+    }
+
+    private List<String> getTopicListTreeElements( TopicNode node, String rootTopic, String delim ) {
+        List< String > topicList = new ArrayList<String>();
+        String topicString = rootTopic + ( node.isVariableNode() ? String.format("{%s}", node.getName() ) : node.getName() );
+        if ( node.getTermCount() > 0L ) {
+            topicList.add(topicString);
+        }
+        for (TopicNode subNode : node.getTopicNodes()) {
+            for ( String topic : subNode.getTopicListTreeElements(subNode, topicString + delim, delim)) {
+                topicList.add(topic);
+            }
+        }
+        return topicList;
     }
 }
