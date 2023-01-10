@@ -38,6 +38,13 @@ public class RegexMatcherEntry {
 
     private Pattern p;
 
+    /**
+     * Create RegexMatcher Entry - Equates to REGEX pattern that will be used to build the TopicNode tree
+     * @param name
+     * @param regexPattern
+     * @param priority
+     * @param topicDomain
+     */
     protected RegexMatcherEntry(String name, String regexPattern, Integer priority, String topicDomain) {
         this.name = name;
         this.regexPattern = regexPattern;
@@ -46,6 +53,11 @@ public class RegexMatcherEntry {
         this.p = Pattern.compile(regexPattern);
     }
 
+    /**
+     * Check if the parameter String s is a match to the REGEX expression
+     * @param s
+     * @return
+     */
     protected boolean matches(String s) {
         Matcher m = p.matcher(s);
         return m.matches();

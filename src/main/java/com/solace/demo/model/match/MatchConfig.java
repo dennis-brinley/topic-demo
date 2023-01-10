@@ -34,6 +34,7 @@ public class MatchConfig {
 
     /**
      * Not used. Reserved for future use
+     * The purpose of this list would be to pre-populate the topic node tree
      */
     @Builder.Default
     protected List<String> knownTopics = new ArrayList<String>();

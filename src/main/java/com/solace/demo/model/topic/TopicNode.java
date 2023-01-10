@@ -60,6 +60,9 @@ public class TopicNode {
     @Getter
     private long termCount = 0L;
 
+    /**
+     * Compiled regex pattern
+     */
     private Pattern p;
 
     /***
@@ -68,6 +71,12 @@ public class TopicNode {
     @Getter
     protected List<TopicNode> topicNodes = new ArrayList<TopicNode>();
 
+    /**
+     * Constructor
+     * @param name
+     * @param regexPattern - RegEx pattern used to identify the topic node on the tree
+     * @param variableNode - TRUE if matches a configured RegEx pattern; FALSE if a literal string
+     */
     public TopicNode(   String      name,
                         String      regexPattern,
                         boolean     variableNode    ) {
@@ -79,19 +88,35 @@ public class TopicNode {
         p = Pattern.compile(regexPattern);
     }
 
+    /**
+     * Invoke when a match found on node
+     */
     public void incrementMatchCount() {
         matchCount++;
     }
 
+    /**
+     * Invoke when the node is the last leaf.
+     * Identifies a completed topic string
+     */
     public void incrementTermCount() {
         termCount++;
     }
 
+    /**
+     * Identifies if this tree node REGEX matches the topic node (String s) passed as input
+     * @param s - Topic Node String (single element of a topic)
+     * @return TRUE if matches; FALSE if does not match
+     */
     public boolean matches(String s) {
         Matcher m = p.matcher(s);
         return m.matches();
     }
 
+    /**
+     * Get the total count of unique topics associated with this node and all nested sub-nodes
+     * @return
+     */
     public long getUniqueTopicCount() {
         long uniqueCount = 0L;
         if ( this.termCount > 0L ) uniqueCount++;
@@ -101,6 +126,10 @@ public class TopicNode {
         return uniqueCount;
     }
 
+    /**
+     * Display the topic tree for the current node and all sub-nodes
+     * @param delim
+     */
     public void displayTopicTree( String delim ) {
         String rootTopic = "";
         displayTopicTreeElements( this, rootTopic, delim );
@@ -116,15 +145,27 @@ public class TopicNode {
         }
     }
 
-    public List<String> getTopicList( String delim ) {
+    /**
+     * Return the processed topic tree as a String list
+     * @param delim - The topic delimiter; should be '/' for Solace
+     * @return
+     */
+    public List<String> getTopicTree( String delim ) {
         String rootTopic = "";
-        List< String > topicList = new ArrayList<String>();
+        List< String > topicTree = new ArrayList<String>();
         for ( String topic : this.getTopicListTreeElements( this, rootTopic, delim ) ) {
-            topicList.add(topic);
+            topicTree.add(topic);
         }
-        return topicList;
+        return topicTree;
     }
 
+    /**
+     * Formats topic strings from the TopicNode tree
+     * @param node
+     * @param rootTopic
+     * @param delim
+     * @return
+     */
     private List<String> getTopicListTreeElements( TopicNode node, String rootTopic, String delim ) {
         List< String > topicList = new ArrayList<String>();
         String topicString = rootTopic + ( node.isVariableNode() ? String.format("{%s}", node.getName() ) : node.getName() );

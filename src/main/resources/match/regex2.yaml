@@ -97,6 +97,14 @@ expressions:
     regexPattern: ^(FDPS_FlightOperator|[A-Z]{3})$
     priority: 15
     topicDomain: FDPS
+  - name: AERODROME_CANADA
+    regexPattern: ^C{1}[A-Z]{3}$
+    priority: 30
+    topicDomain: FDPS
+  - name: AERODROME_INTL
+    regexPattern: ^[A-Z]{4}$
+    priority: 32
+    topicDomain: FDPS
   - name: FDPS_LOC_ID
     regexPattern: ^[A-Z]{1}[A-Z0-9]{3}$
     priority: 50
@@ -109,6 +117,10 @@ expressions:
     regexPattern: ^(ACTIVE|DROPPED|CANCELLED|PROPOSED)$
     priority: 20
     topicDomain: FDPS
+  - name: FDPS_WAYPOINT
+    regexPattern: ^[A-Z]{4,5}[0-9]{2}$
+    priority: 100
+    topicDomain: FDPS
   - name: FDPS_NONSTD_AIRCRAFT_ID
     regexPattern: ^([A-Z]{5}|N[0-9]{4}|[A-Z]{2,3}\d{2,3}[A-Z]{0,2})$
     priority: 100
@@ -117,12 +129,14 @@ expressions:
     regexPattern: ^([A-Z]{3}|[A-Z]{5})\d{6}$
     priority: 100
     topicDomain: FDPS
-#  - name: FDPS_INT
-#    regexPattern: ^([\+\-]?\d+|NaN)$
-#    priority: 50
-#    topicDomain: FDPS
+  - name: FDPS_INTEGER
+    regexPattern: ^([\+\-]?\d+|NaN)$
+    priority: 50
+    topicDomain: FDPS
 
 # knownTopics is not being used
 knownTopics:
   - some/topic/value/{NAME:EXPRESSION_NAME}/{NAME:EXPRESSION_NAME}/text/{NAME:EXPRESSION_NAME}
   - some/topic/value/{NAME:EXPRESSION_NAME}/{NAME:EXPRESSION_NAME}/text/{NAME:EXPRESSION_NAME}
+
+

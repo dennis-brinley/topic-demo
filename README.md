@@ -33,13 +33,13 @@ expressions:
 
 ## Command Line
 The following arguments are available on the command line:
-- --topics-file-in=[ yaml topics file ] - Not enabled with uncommenting some code. Used to read topics from a yaml file (see test resources)
+- --topics-file-in=[ yaml topics file ] - Not enabled without uncommenting some code. Used to read topics from a yaml file (see test resources)
     -- See ```src/test/resources``` for example topic files
 - --regex-config=[ yaml config file ]
     - Defaults to: ```src/main/resources/match/regex.yaml``` on the class path
 - --solace-broker=Connection string to Solace PubSub+ broker: [ protocol://host:port ]
     - e.g. ```--solace-broker=tcps://my-super-broker.org:55443```
-- --vpn=[ solace message vpn ]
+- --message-vpn=[ solace message vpn ]
 - --basic-user=[ Basic Auth User ]
 - --basic-password=[ Basic Auth Password ]
 - --wait-millis=[ Time to listen to the broker topics in milliseconds ]

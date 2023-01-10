@@ -36,7 +36,7 @@ public class CrushIt
 
     static final String     ARG_CONFIG_FILE     = "--regex-config=";
     static final String     ARG_SOLACE_HOST     = "--solace-broker=";
-    static final String     ARG_SOLACE_VPN      = "--vpn=";
+    static final String     ARG_SOLACE_VPN      = "--message-vpn=";
     static final String     ARG_BASIC_USER      = "--basic-user=";
     static final String     ARG_BASIC_PWD       = "--basic-password=";
     static final String     ARG_WAIT_MILLIS     = "--wait-millis=";
@@ -127,7 +127,7 @@ public class CrushIt
                     matchConfig.getExpressions().get(0).getRegexPattern() );
 
 /***
-        //  ### READ TOPICS FROM FILES INSTEAD OF SERVER
+        //  ### READ TOPICS FROM FILES INSTEAD OF SOLACE BROKER
         TopicList topicList = null;
         String topicListYamlFile = "src/test/resources/topic-list-02.yaml";
         try {
@@ -208,40 +208,6 @@ public class CrushIt
         log.info( "Effective Regex Processing Rate: {} topics/second", 
                     (int)( topicProcessor.getProcessedTopicCount() / ( topicProcessor.getCumulativeElapsedProcessingTimeNano() / 1e9  )));
 
-/***
- * Test code to make sure all topics are output to array
- * 
-        for ( TopicNode node : topicProcessor.getRootTopicNodes() ) {
-            for ( String s : node.getTopicList(matchConfig.getTopicDelimiter())) {
-                System.out.println( String.format("%04d - Topic: %s", s.length(), s ));
-            }
-        }
-*/
-
-/***
- * Test AsyncApi Extract
- * 
-        AsyncAPI asyncApi = new AsyncAPI();
-        asyncApi.setAsyncapi("2.4.0");
-        asyncApi.setInfo(new Info());
-        asyncApi.getInfo().setTitle("FAA-topic-import-test");
-        asyncApi.getInfo().setDescription("Scrape topics from SCDS feed and import to Event Portal");
-        asyncApi.getInfo().setVersion("0.0.1");
-        asyncApi.getInfo().setExtensionFields(new HashMap<String, String>());
-        asyncApi.getInfo().getExtensionFields().put("x-event-api-state-id", "1");
-        asyncApi.getInfo().getExtensionFields().put("x-event-api-state-name", "DRAFT");
-        asyncApi.getInfo().getExtensionFields().put("x-application-domain-name", "FAA");
-        asyncApi.setChannels(new HashMap<String, ChannelItem>());
-
-        for ( TopicNode node : topicProcessor.getRootTopicNodes() ) {
-            for ( String topic : node.getTopicList(matchConfig.getTopicDelimiter())) {
-//                ChannelItem ci = new ChannelItem();
-                asyncApi.getChannels().put( topic, new ChannelItem() );
-            }
-        }
-        mapper.setSerializationInclusion(Include.NON_NULL);
-        mapper.writeValue( new File( "asysncapi-faa.yaml"), asyncApi);
-*/
         return;
     }
 }

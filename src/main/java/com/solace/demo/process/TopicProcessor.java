@@ -53,6 +53,11 @@ public class TopicProcessor {
         regexMatcher = new RegexMatcher(matchConfig);
     }
     
+    /**
+     * Process all topics provided as a list from input json/yaml file
+     * @param topicList
+     * @throws Exception
+     */
     public void processTopics(TopicList topicList) throws Exception {
 
         if ( topicList == null || matchConfig == null ) {
@@ -64,16 +69,20 @@ public class TopicProcessor {
         for (String topic : topicList.getTopics() ) {
             processTopic( topic );
         }
+
     }
 
+    /**
+     * Process an individual topic and include it in the TopicNode tree
+     * @param topic
+     * @throws Exception
+     */
     public void processTopic(String topic) throws Exception {
 
         long startNano = System.nanoTime();
         try {
             StringTokenizer tokenizer = new StringTokenizer(topic, matchConfig.getTopicDelimiter());
-            if (tokenizer.hasMoreTokens()) {
-                execMatch(tokenizer, rootTopicNodes, "" );
-            }
+            execMatch(tokenizer, rootTopicNodes, "" );
         } catch ( Exception exc ) {
             log.warn("Error processing topic string: {}", topic);
             errorTopics.add( topic );
@@ -82,6 +91,14 @@ public class TopicProcessor {
         cumulativeElapsedProcessingTimeNano += System.nanoTime() - startNano;
     }
 
+    /**
+     * Called recursively by 'processTopic' for each node in the topic string
+     * Matches to existing TopicNode or creates a new one if no match
+     * @param tokenizer - Tokenized topic string
+     * @param topicNodes - List of TopicNode objects that may match the current node
+     * @param topicDomain - The first element discovered for the topic; Used to scope subsequent REGEX expressions
+     * @throws Exception
+     */
     private void execMatch(StringTokenizer tokenizer, List<TopicNode> topicNodes, String topicDomain) throws Exception {
 
         // SAFETY CHECK
@@ -89,11 +106,11 @@ public class TopicProcessor {
         String currentNodeString = tokenizer.nextToken();
         String td = topicDomain;
 
+        //  1. CHECK FOR MATCH IN EXISTING NODES
         for (TopicNode topicNode : topicNodes) {
-            //  CHECK FOR MATCH AT THE CURRENT LEVEL
             if (topicNode.matches(currentNodeString)) {
                 topicNode.incrementMatchCount();
-                if ( td.contentEquals("") && !topicNode.isVariableNode() ) {
+                if ( td.length() == 0 && !topicNode.isVariableNode() ) {
                     td = topicNode.getName();
                 }
                 if (tokenizer.hasMoreTokens()) {
@@ -105,10 +122,10 @@ public class TopicProcessor {
             }
         }
 
-        //  CHECK FOR MATCH IN REGEX EXPRESSIONS
+        //  2. CHECK FOR MATCH IN REGEX EXPRESSIONS
         RegexMatcherEntry re = regexMatcher.checkForMatch(currentNodeString, td);
         if ( re != null ) {
-            //  FOUND IN REGEX, CREATE NEW VARIABLE NODE
+            //  A. FOUND IN REGEX, CREATE NEW VARIABLE NODE
             TopicNode newVariableNode = new TopicNode(re.getName(), re.getRegexPattern(), true );
             newVariableNode.incrementMatchCount();
             if (tokenizer.hasMoreTokens()) {
@@ -118,7 +135,7 @@ public class TopicProcessor {
             }
             topicNodes.add(newVariableNode);
         } else {
-            //  NOT FOUND IN REGEX, CREATE NEW LITERAL NODE
+            //  B. NOT FOUND IN REGEX, CREATE NEW LITERAL NODE
             String newLiteralNodeRegex = String.format("%s%s%s", "^", escapeSpecialForRegex(currentNodeString), "$");
             TopicNode newLiteralNode = new TopicNode(currentNodeString, newLiteralNodeRegex, false);
             newLiteralNode.incrementMatchCount();
@@ -135,6 +152,10 @@ public class TopicProcessor {
         return;
     }
 
+    /**
+     * Recursively iterate through the rootTopicNodes and sum up all the uniqueTopicCount values
+     * @return
+     */
     public long getUniqueTopicCount() {
 
         long uniqueCount = 0;
@@ -144,6 +165,12 @@ public class TopicProcessor {
         return uniqueCount;
     }
 
+    /**
+     * When storing REGEX for a new literal node, make sure that any REGEX special characters are escaped
+     * Not 100 pct sure this is working properly
+     * @param s
+     * @return
+     */
     private String escapeSpecialForRegex(String s) {
         final String escChars[] = { 
                 "\\\\", "\\.", "\\*", "\\>", "\\+", "\\-", "\\(", "\\)", "\\^", "\\$", "\\#", "\\@", "\\!", "\\&", 

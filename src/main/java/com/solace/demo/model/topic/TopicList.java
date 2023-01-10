@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * This class is to read topics from a yaml file.
+ * This class is to read topics as a list of strings from a json/yaml file.
  */
 @Data
 @Builder

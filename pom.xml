@@ -97,7 +97,7 @@
                         <resource>
                             <directory>src/main/resources/match</directory>
                             <includes>
-                                <include>regex.yaml</include>
+                                <include>regex*.yaml</include>
                             </includes>
                         </resource>
                     </resources>
